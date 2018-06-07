@@ -1,0 +1,215 @@
+%%% Template for documenting projects which involve circuit illustrations and code.
+% Author: Claudiu Groza
+
+% Template based on the template created by:
+% Author:   Luis José Salazar-Serrano
+%           totesalaz@gmail.com / luis-jose.salazar@icfo.es
+%           http://opensourcelab.salazarserrano.com
+
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\renewcommand\familydefault{\sfdefault}
+\usepackage{tgheros}
+\usepackage[defaultmono]{droidmono}
+
+\usepackage{amsmath,amssymb,amsthm,textcomp}
+\usepackage{enumerate}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage{courier}
+
+\usepackage{pythonhighlight}
+
+\usepackage{hyperref}
+
+\usepackage{geometry}
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+
+\linespread{1.3}
+
+\newcommand{\divider}{\rule{\linewidth}{0.5pt}}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\divider\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{Google Calendar Assistant}
+\cfoot{}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%
+
+% code listing settings
+\usepackage{listings}
+
+\lstset{%
+  language = Octave,
+  backgroundcolor=\color{white},   
+  basicstyle=\footnotesize\ttfamily,       
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                   
+  commentstyle=\color{gray},    
+  deletekeywords={...},           
+  escapeinside={\%*}{*)},          
+  extendedchars=true,              
+  frame=single,                    
+  keepspaces=true,                 
+  keywordstyle=\color{orange},       
+  morekeywords={*,...},            
+  numbers=left,                    
+  numbersep=5pt,                   
+  numberstyle=\footnotesize\color{gray}, 
+  rulecolor=\color{black},         
+  rulesepcolor=\color{blue},
+  showspaces=false,                
+  showstringspaces=false,          
+  showtabs=false,                  
+  stepnumber=2,                    
+  stringstyle=\color{orange},    
+  tabsize=2,                       
+  title=\lstname,
+  emphstyle=\bfseries\color{blue}%  style for emph={} 
+} 
+
+%%%----------%%%----------%%%----------%%%----------%%%
+
+\begin{document}
+
+\title{Google Calendar Assistant}
+
+\author{Mihai Cania, Politehnica University of Timisoara}
+
+\date{June, 2018}
+
+\maketitle
+
+
+\section{Repository}
+Schematics, diagrams and codebase are contained under the following git repository:\\
+\textbf{\url{https://github.com/MihaiCania/MSProject}}
+
+\section{User requirements}
+
+\begin{enumerate}  
+\item The system must have access to Google Assistant API.
+\item The system must have access to Google Calendar API.
+\item The system must be able to get the events from Google Calendar.
+\item The system should get information every minute from the Google Calendar regarding the events.
+\item The system must inform the user regarding the upcoming events.
+\item The system must use sound notification.
+\item The system should run in an environment that provides a 24/24 access.
+\end{enumerate}
+
+\section{System overview}
+
+The overview of the system is depicted in Figure \ref{fig:system}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.5]{system-overview.png}
+\caption{System overview diagram}
+\label{fig:system}
+\end{figure}
+
+The Raspberry PI communicate via WIFI with the Router in order to have access to the internet.\\
+
+Calendar polling script have the responsability to pull events from Google Calendar every minute and if the event starts in the following 10 minutes then the user will be notify by a sound.\\
+
+Google Assistant is integrated in the system and the user can add new calendar entries simply by speaking to it.\\
+
+Google Assistant and Google Calendars communicate one with each other and the calendar entry will be visible in the calendar.\\
+
+\section{Circuit design}
+
+The hardware view of the system is represented by a Raspberry PI 3 Model B+.\\
+
+It is mandatory to have a microfone connected via USB to the Raspberry PI.\\
+
+A sound device must be connected also via USB, AUX or HDMI.\\
+
+It is mandatory to have a microfone and a sound device connected in order to communicate with Google Voice Assistant whose job is to help the user with answers to questions and also to be able to add calendar entries. The sound device is used to notify the user if there are upcoming events in the following minutes and to remind the user to check the calendar.
+
+\section{Software design}
+
+The software components and data flow directions are depicted in Figure \ref{fig:software}. Each of these will be presented in the following subsections.\\
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.7]{software.png}
+\caption{Software entities involved}
+\label{fig:software}
+\end{figure}
+ 
+\subsection{Python modules}
+
+gcalnotifier.py: it retrieves the calendar entries from Google Calendar every minute and notify the user if there are events that starts in the following 10 minutes.\\ 
+
+get\_credentials(): create the credentials in order to access Google Calendar and Google Assistant using the auto-generated file from Google.\\
+
+has\_reminder(event): returns True if there's a reminder set for the event.\\
+
+get\_next\_event(search\_limit): get all the events on the calendar from now through 'seach\_limit' minutes from now.\\
+
+main(): infinite loop to continuously check Google Calendar for future entries and if there are any notify the user how much time is left until the event starts. It does 3 notifications, one for 10-5 minutes remaining, one for 5-2 minutes remaining and a less than 2 minutes remaining.\\
+
+\subsection{Google Assistant}
+
+The software use the default Google Asistant for Raspberry PI project from \url{https://developers.google.com/}
+
+\section{Results and further work}
+
+The current version of the project supports the following functionalities:
+\begin{itemize}  
+\item reliable calendar entries polling
+\item notifications via HDMI sound card
+\item Google Assistant functionalities
+\item add calendar events using Google Assistant\\
+\end{itemize}
+
+The following list of extensions and improvements was identified to be supported in the future:
+\begin{itemize}  
+\item AUX or USB sound card notification (no dependency of a monitor)
+\item custom calendar view using an old monitor (can be mounted on a wall)
+\item custom notification for every event (using TTS to notify the event title)
+\end{itemize}
+
+\newpage
+\section{References}
+\begin{enumerate}  
+\item Draw IO, \url{https://www.draw.io/}
+\item Google Assistant SDK, \url{https://developers.google.com/assistant/sdk/guides/service/python/embed/audio}
+\item Google Calendar API, \url{https://developers.google.com/calendar/quickstart/python}
+\end{enumerate}
+
+
+
+\end{document}
