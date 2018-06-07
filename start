@@ -1,0 +1,2 @@
+source env/bin/activate
+googlesamples-assistant-pushtotalk --project-id gcalproject-206307 --device-model-id gcalproject
