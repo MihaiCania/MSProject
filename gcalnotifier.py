@@ -147,7 +147,7 @@ def main():
                     os.system('aplay ten.wav')
                 # is the appointment less than 5 minutes but more than 2 minutes from now?
                 elif num_minutes > SECOND_THRESHOLD:
-                	# play five.wav sound 3 times within 30 seconds to remind that there are less than 5 minutes left
+               	    # play five.wav sound 3 times within 30 seconds to remind that there are less than 5 minutes left
                     os.system('aplay five.wav')
                     time.sleep(10)
                     os.system('aplay five.wav')
